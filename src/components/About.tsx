@@ -7,8 +7,8 @@ const About = () => {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   const stats = [
-    { number: '2+', label: 'Anos de experiência' },
-    { number: '15+', label: 'Projetos concluídos' },
+    { number: '1+', label: 'Anos de experiência' },
+    { number: '5', label: 'Projetos concluídos' },
     { number: '100%', label: 'Dedicação' },
   ];
 

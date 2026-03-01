@@ -1,9 +1,9 @@
-import { motion } from 'framer-motion';
-import { Heart, ArrowUp } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Heart, ArrowUp } from "lucide-react";
 
 const Footer = () => {
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -16,7 +16,7 @@ const Footer = () => {
             className="font-display text-2xl font-bold gradient-text"
             whileHover={{ scale: 1.05 }}
           >
-            Kaua<span className="text-primary">.</span>
+            Kaua
           </motion.a>
 
           {/* Copyright */}

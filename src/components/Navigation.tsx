@@ -40,7 +40,7 @@ const Navigation = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Kaua<span className="text-primary">.</span>
+            Kaua
           </motion.a>
 
           {/* Desktop Navigation */}
