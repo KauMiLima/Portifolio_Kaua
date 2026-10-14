@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Syne', 'sans-serif'],
-        body: ['Space Grotesk', 'sans-serif'],
+        display: ['Fraunces', 'Georgia', 'serif'],
+        body: ['"Hanken Grotesk"', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -23,12 +23,13 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        burgundy: "hsl(var(--burgundy))",
-        crimson: "hsl(var(--crimson))",
-        "red-intense": "hsl(var(--red-intense))",
-        cream: "hsl(var(--cream))",
-        charcoal: "hsl(var(--charcoal))",
-        "gray-medium": "hsl(var(--gray-medium))",
+        ink: "hsl(var(--ink))",
+        surface: "hsl(var(--surface))",
+        line: "hsl(var(--line))",
+        paper: "hsl(var(--paper))",
+        mute: "hsl(var(--mute))",
+        signal: "hsl(var(--signal))",
+        wine: "hsl(var(--wine))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

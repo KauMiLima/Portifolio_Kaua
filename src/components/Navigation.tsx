@@ -1,111 +1,114 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { profile } from '@/data/content';
 
 const navItems = [
-  { name: 'Início', href: '#hero' },
-  { name: 'Sobre', href: '#about' },
-  { name: 'Skills', href: '#skills' },
-  { name: 'Projetos', href: '#projects' },
-  { name: 'Contato', href: '#contact' },
+  { name: 'Projetos', href: '#projetos' },
+  { name: 'Sobre', href: '#sobre' },
+  { name: 'Contato', href: '#contato' },
 ];
 
 const Navigation = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 });
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+  }, [open]);
 
   return (
     <>
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          isScrolled ? 'glass-card py-4' : 'py-6 bg-transparent'
+      <motion.div
+        aria-hidden
+        className="fixed inset-x-0 top-0 z-[70] h-[2px] origin-left bg-signal"
+        style={{ scaleX: progress }}
+      />
+
+      <header
+        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500 ${
+          scrolled
+            ? 'border-b border-line/70 bg-ink/80 backdrop-blur-md'
+            : 'border-b border-transparent'
         }`}
       >
-        <div className="container mx-auto px-6 flex items-center justify-between">
-          {/* Logo */}
-          <motion.a
-            href="#hero"
-            className="font-display text-2xl font-bold gradient-text"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Kaua
-          </motion.a>
+        <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 md:px-8">
+          <a href="#topo" className="font-display text-xl tracking-tight">
+            {profile.name}
+          </a>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item, index) => (
-              <motion.a
-                key={item.name}
+          <div className="hidden items-center gap-8 md:flex">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
                 href={item.href}
-                className="font-body text-sm text-muted-foreground link-underline hover:text-foreground transition-colors"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                className="draw-underline text-[0.95rem] text-mute transition-colors hover:text-paper"
               >
                 {item.name}
-              </motion.a>
+              </a>
             ))}
+            {profile.available && (
+              <a
+                href="#contato"
+                className="flex items-center gap-2 rounded-full border border-line px-3.5 py-1.5 text-sm text-paper transition-colors hover:border-paper"
+              >
+                <span
+                  className="h-2 w-2 rounded-full bg-[hsl(140_60%_55%)]"
+                  style={{ animation: 'pulse-dot 2.4s ease-in-out infinite' }}
+                />
+                Aberto a vagas
+              </a>
+            )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <motion.button
-            className="md:hidden relative z-50 p-2"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            whileTap={{ scale: 0.9 }}
+          <button
+            className="relative z-50 -mr-2 p-2 md:hidden"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={open}
           >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6 text-foreground" />
-            ) : (
-              <Menu className="w-6 h-6 text-foreground" />
-            )}
-          </motion.button>
-        </div>
-      </motion.nav>
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </nav>
+      </header>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {open && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 md:hidden"
+            className="fixed inset-0 z-40 flex flex-col justify-end bg-ink px-5 pb-16 md:hidden"
+            initial={{ clipPath: 'inset(0 0 100% 0)' }}
+            animate={{ clipPath: 'inset(0 0 0% 0)' }}
+            exit={{ clipPath: 'inset(0 0 100% 0)' }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="absolute right-0 top-0 bottom-0 w-3/4 bg-charcoal border-l border-border p-8 pt-24"
-            >
-              <div className="flex flex-col gap-6">
-                {navItems.map((item, index) => (
-                  <motion.a
-                    key={item.name}
+            <ul className="space-y-2">
+              {navItems.map((item, i) => (
+                <motion.li
+                  key={item.href}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 + i * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <a
                     href={item.href}
-                    className="font-display text-2xl text-foreground hover:text-primary transition-colors"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => setOpen(false)}
+                    className="font-display text-5xl tracking-tight"
                   >
                     {item.name}
-                  </motion.a>
-                ))}
-              </div>
-            </motion.div>
+                  </a>
+                </motion.li>
+              ))}
+            </ul>
+            <p className="mt-10 text-mute">{profile.email}</p>
           </motion.div>
         )}
       </AnimatePresence>

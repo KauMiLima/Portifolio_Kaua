@@ -1,23 +1,15 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
-
 const NotFound = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
-  }, [location.pathname]);
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-muted-foreground">Oops! Page not found</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
-          Return to Home
+    <main className="flex min-h-screen items-center justify-center px-6">
+      <div className="max-w-md">
+        <p className="font-display text-8xl text-signal">404</p>
+        <h1 className="mt-4 text-2xl">Essa página não existe.</h1>
+        <p className="mt-2 text-mute">O endereço pode ter mudado ou estar digitado errado.</p>
+        <a href="/" className="btn-solid mt-8">
+          Voltar ao portfólio
         </a>
       </div>
-    </div>
+    </main>
   );
 };
 

@@ -1,152 +1,155 @@
-import { motion, Variants } from 'framer-motion';
-import { ArrowDown, Github, Linkedin, Mail } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { profile } from '@/data/content';
+
+const ease = [0.16, 1, 0.3, 1] as const;
+
+/**
+ * Nome gigante em Fraunces. Cada letra engorda conforme o cursor se aproxima
+ * (eixo variável 'wght') e fica mais "suave" quando está longe (eixo 'SOFT').
+ */
+const ReactiveName = ({ lines }: { lines: string[] }) => {
+  const letters = useRef<HTMLSpanElement[]>([]);
+  const section = useRef<HTMLHeadingElement>(null);
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    const els = letters.current.filter(Boolean);
+    if (reduce || !window.matchMedia('(pointer: fine)').matches) return;
+
+    const BASE = 320;
+    const PEAK = 900;
+    const RADIUS = 360;
+    const current = els.map(() => BASE);
+    let mx = -9999;
+    let my = -9999;
+    let raf = 0;
+    let visible = true;
+
+    const onMove = (e: PointerEvent) => {
+      mx = e.clientX;
+      my = e.clientY;
+    };
+    const onLeave = () => {
+      mx = -9999;
+      my = -9999;
+    };
+
+    const tick = () => {
+      els.forEach((el, i) => {
+        const r = el.getBoundingClientRect();
+        const d = Math.hypot(mx - (r.left + r.width / 2), my - (r.top + r.height / 2));
+        const t = Math.max(0, 1 - d / RADIUS);
+        const target = BASE + (PEAK - BASE) * t * t;
+        current[i] += (target - current[i]) * 0.14;
+        const soft = Math.round(100 * (1 - t));
+        el.style.fontVariationSettings = `'wght' ${current[i].toFixed(0)}, 'SOFT' ${soft}, 'opsz' 144`;
+      });
+      if (visible) raf = requestAnimationFrame(tick);
+    };
+
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      cancelAnimationFrame(raf);
+      if (visible) raf = requestAnimationFrame(tick);
+    });
+    if (section.current) io.observe(section.current);
+
+    window.addEventListener('pointermove', onMove, { passive: true });
+    document.documentElement.addEventListener('pointerleave', onLeave);
+    return () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      window.removeEventListener('pointermove', onMove);
+      document.documentElement.removeEventListener('pointerleave', onLeave);
+    };
+  }, [reduce]);
+
+  let index = 0;
+  return (
+    <h1
+      ref={section}
+      aria-label={lines.join(' ')}
+      className="select-none font-display leading-[0.82] tracking-[-0.045em] text-[clamp(5.5rem,24vw,16rem)]"
+    >
+      {lines.map((line, li) => (
+        <span
+          key={line}
+          aria-hidden
+          className={`block overflow-hidden pb-[0.06em] ${li === 1 ? 'pl-[0.9em] md:pl-[1.6em]' : ''}`}
+        >
+          {line.split('').map((ch) => {
+            const i = index++;
+            return (
+              <motion.span
+                key={i}
+                className="inline-block"
+                initial={reduce ? false : { y: '105%' }}
+                animate={{ y: '0%' }}
+                transition={{ delay: 0.15 + i * 0.055, duration: 1.1, ease }}
+              >
+                <span
+                  ref={(el) => {
+                    if (el) letters.current[i] = el;
+                  }}
+                  className="inline-block"
+                  style={{ fontVariationSettings: "'wght' 320, 'SOFT' 100, 'opsz' 144" }}
+                >
+                  {ch}
+                </span>
+              </motion.span>
+            );
+          })}
+        </span>
+      ))}
+    </h1>
+  );
+};
 
 const Hero = () => {
-  const titleVariants: Variants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.1,
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1] as const,
-      },
-    }),
-  };
+  const reduce = useReducedMotion();
+  const fade = (delay: number) =>
+    reduce
+      ? {}
+      : {
+          initial: { opacity: 0, y: 16 },
+          animate: { opacity: 1, y: 0 },
+          transition: { delay, duration: 0.9, ease },
+        };
 
   return (
-    <section
-      id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-    >
-      {/* Content */}
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Greeting */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="mb-6"
-          >
-            <span className="inline-block px-4 py-2 glass-card rounded-full text-sm font-body text-muted-foreground">
-              👋 Olá, eu sou
-            </span>
-          </motion.div>
+    <section id="topo" className="relative isolate flex min-h-[100svh] flex-col justify-end overflow-hidden pb-14 pt-28 md:pb-20">
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -right-[15%] top-[10%] -z-10 h-[70vmax] w-[70vmax] rounded-full"
+        style={{ background: 'radial-gradient(closest-side, hsl(var(--signal) / 0.45), hsl(var(--wine) / 0.25) 55%, transparent)' , filter: 'blur(40px)' }}
+        initial={reduce ? false : { opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 2, ease }}
+      />
+      <div className="mx-auto w-full max-w-6xl px-5 md:px-8">
+        <motion.p {...fade(0.1)} className="mb-6 text-mute md:mb-10">
+          {profile.role} no {profile.location}
+        </motion.p>
 
-          {/* Name */}
-          <div className="overflow-hidden mb-4">
-            <motion.h1
-              custom={1}
-              variants={titleVariants}
-              initial="hidden"
-              animate="visible"
-              className="font-display text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight"
-            >
-              <span className="gradient-text glow-text">Kaua</span>
-            </motion.h1>
-          </div>
+        <ReactiveName lines={['Kauã', 'Lima']} />
 
-          {/* Role */}
-          <div className="overflow-hidden mb-8">
-            <motion.h2
-              custom={2}
-              variants={titleVariants}
-              initial="hidden"
-              animate="visible"
-              className="font-display text-3xl md:text-4xl lg:text-5xl font-medium text-muted-foreground"
-            >
-              Desenvolvedor{' '}
-              <span className="text-primary">Front-End</span>
-            </motion.h2>
-          </div>
-
-          {/* Description */}
-          <motion.p
-            custom={3}
-            variants={titleVariants}
-            initial="hidden"
-            animate="visible"
-            className="font-body text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed"
-          >
-            Transformo ideias em experiências digitais memoráveis através de
-            código limpo, design moderno e animações fluidas.
+        <div className="mt-12 grid gap-10 border-t border-line pt-8 md:mt-16 md:grid-cols-12 md:gap-8">
+          <motion.p {...fade(0.9)} className="max-w-[46ch] text-lg leading-relaxed text-paper/90 md:col-span-7">
+            Construo interfaces web responsivas com HTML, CSS e JavaScript, e gosto de cuidar
+            dos detalhes de animação que fazem um site parecer vivo.
           </motion.p>
 
-          {/* CTA Buttons */}
-          <motion.div
-            custom={4}
-            variants={titleVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-wrap items-center justify-center gap-4 mb-12"
-          >
-            <motion.a
-              href="#projects"
-              className="group relative px-8 py-4 font-body font-medium overflow-hidden rounded-lg"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-crimson to-red-intense transition-transform group-hover:scale-105" />
-              <span className="relative text-foreground">Ver Projetos</span>
-            </motion.a>
-
-            <motion.a
-              href="#contact"
-              className="px-8 py-4 font-body font-medium border border-border rounded-lg text-foreground hover:border-primary hover:text-primary transition-colors"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Entrar em Contato
-            </motion.a>
-          </motion.div>
-
-          {/* Social Links */}
-          <motion.div
-            custom={5}
-            variants={titleVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex items-center justify-center gap-6"
-          >
-            {[
-              { icon: Github, href: 'https://github.com/KauMiLima', label: 'GitHub' },
-              { icon: Linkedin, href: 'https://www.linkedin.com/in/kaua-lima-ba6a87300/', label: 'LinkedIn' },
-              { icon: Mail, href: '#contact', label: 'Email' },
-            ].map(({ icon: Icon, href, label }) => (
-              <motion.a
-                key={label}
-                href={href}
-                aria-label={label}
-                className="p-3 glass-card rounded-full text-muted-foreground hover:text-primary hover:glow-border transition-all"
-                whileHover={{ scale: 1.1, y: -5 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <Icon className="w-5 h-5" />
-              </motion.a>
-            ))}
+          <motion.div {...fade(1.05)} className="flex flex-wrap items-start gap-3 md:col-span-5 md:justify-end">
+            <a href="#projetos" className="btn-solid">
+              Ver projetos
+            </a>
+            <a href="#contato" className="btn-ghost">
+              Falar comigo
+            </a>
           </motion.div>
         </div>
       </div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <motion.a
-          href="#about"
-          className="flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <span className="text-xs font-body tracking-wider uppercase">Scroll</span>
-          <ArrowDown className="w-4 h-4" />
-        </motion.a>
-      </motion.div>
     </section>
   );
 };

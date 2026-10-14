@@ -1,125 +1,37 @@
-import { motion } from 'framer-motion';
-import { useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { education } from '@/data/content';
 
 const About = () => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
-
-  const stats = [
-    { number: '1+', label: 'Anos de experiência' },
-    { number: '5', label: 'Projetos concluídos' },
-    { number: '100%', label: 'Dedicação' },
-  ];
-
   return (
-    <section id="about" className="py-32 relative">
-      <div className="container mx-auto px-6">
-        <div ref={ref} className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Image/Visual Side */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="relative"
-          >
-            <div className="relative aspect-square max-w-md mx-auto">
-              {/* Decorative elements */}
-              <motion.div
-                className="absolute -inset-4 morph-blob opacity-60"
-                style={{
-                  background: 'var(--gradient-primary)',
-                  filter: 'blur(40px)',
-                }}
-                animate={{ rotate: 360 }}
-                transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-              />
-              
-              {/* Main image container */}
-              <div className="relative glass-card rounded-3xl overflow-hidden aspect-square">
-                <div className="absolute inset-0 bg-gradient-to-br from-crimson/20 to-burgundy/40" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.span
-                    className="font-display text-9xl font-bold text-primary/20"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                  >
-                    K
-                  </motion.span>
-                </div>
-              </div>
+    <section id="sobre" className="scroll-mt-16 border-t border-line py-24 md:py-36">
+      <div className="mx-auto grid max-w-6xl gap-16 px-5 md:grid-cols-12 md:gap-12 md:px-8">
+        <div className="md:col-span-7">
+          <h2 className="section-title mb-10">Sobre</h2>
+          <div className="max-w-[58ch] space-y-5 text-lg leading-relaxed text-paper/90">
+            <p>
+              Sou desenvolvedor front-end e trabalho com a base da web: HTML, CSS e JavaScript.
+              Gosto de interfaces que funcionam bem em qualquer tela e que têm movimento na medida
+              certa.
+            </p>
+            <p className="text-mute">
+              Hoje estou aprofundando React e TypeScript para construir aplicações maiores, sem
+              perder o cuidado com semântica, acessibilidade e performance que o código feito à mão
+              me ensinou.
+            </p>
+          </div>
+        </div>
 
-              {/* Floating badge */}
-              <motion.div
-                className="absolute -bottom-4 -right-4 glass-card px-6 py-3 rounded-2xl"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: 0.5 }}
-              >
-                <span className="text-primary font-display font-bold text-lg">Front-End Dev</span>
-              </motion.div>
-            </div>
-          </motion.div>
-
-          {/* Content Side */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <motion.span
-              className="inline-block text-primary font-body text-sm tracking-wider uppercase mb-4"
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.3 }}
-            >
-              Sobre Mim
-            </motion.span>
-
-            <h2 className="font-display text-4xl md:text-5xl font-bold mb-6">
-              Criando experiências{' '}
-              <span className="gradient-text">digitais únicas</span>
-            </h2>
-
-            <div className="space-y-4 text-muted-foreground font-body leading-relaxed mb-8">
-              <p>
-                Sou um desenvolvedor Front-End apaixonado por criar interfaces 
-                modernas, responsivas e com experiências de usuário excepcionais.
-              </p>
-              <p>
-                Meu foco está em dominar as tecnologias fundamentais da web: 
-                <span className="text-foreground font-medium"> HTML5</span>, 
-                <span className="text-foreground font-medium"> CSS3</span> e 
-                <span className="text-foreground font-medium"> JavaScript</span>, 
-                combinadas com frameworks modernos para criar soluções elegantes e performáticas.
-              </p>
-              <p>
-                Acredito que cada linha de código é uma oportunidade de criar algo 
-                extraordinário. Busco constantemente aprender novas tecnologias e 
-                aprimorar minhas habilidades.
-              </p>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-6">
-              {stats.map((stat, index) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.4 + index * 0.1 }}
-                  className="text-center lg:text-left"
-                >
-                  <span className="block font-display text-3xl md:text-4xl font-bold gradient-text">
-                    {stat.number}
-                  </span>
-                  <span className="text-xs md:text-sm text-muted-foreground font-body">
-                    {stat.label}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+        <div className="md:col-span-5 md:pt-4">
+          <h3 className="mb-8 text-sm text-mute">Formação</h3>
+          <ol className="relative space-y-10 border-l border-line pl-8">
+            {education.map((item) => (
+              <li key={item.title} className="relative">
+                <span className="absolute -left-[37px] top-2 h-2.5 w-2.5 rounded-full border-2 border-ink bg-signal" />
+                {item.period && <p className="text-sm text-mute">{item.period}</p>}
+                <p className="mt-1 font-display text-2xl tracking-tight">{item.title}</p>
+                <p className="mt-1 text-mute">{item.place}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
     </section>
