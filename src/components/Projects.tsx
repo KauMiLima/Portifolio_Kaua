@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowUpRight, Github } from 'lucide-react';
 import { projects, type Project } from '@/data/content';
+import ProjectsGallery from './ProjectsGallery';
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const FRAME_W = 1280;
@@ -84,15 +85,19 @@ const Preview = ({ project }: { project: Project }) => {
 
 const Projects = () => {
   return (
-    <section id="projetos" className="scroll-mt-16 py-24 md:py-36">
+    <section id="projetos" className="scroll-mt-16 pb-24 pt-24 md:pb-36 md:pt-36">
       <div className="mx-auto max-w-6xl px-5 md:px-8">
-        <div className="mb-16 flex flex-col gap-4 md:mb-24 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <h2 className="section-title">Projetos</h2>
           <p className="max-w-[42ch] text-mute">
-            Sites que publiquei. As prévias abaixo são as versões ao vivo, é só clicar para abrir.
+            Sites que publiquei. Role para ver a galeria e, logo abaixo, os detalhes de cada um.
           </p>
         </div>
+      </div>
 
+      <ProjectsGallery />
+
+      <div className="mx-auto max-w-6xl px-5 pt-24 md:px-8 md:pt-36">
         <div className="space-y-24 md:space-y-36">
           {projects.map((project, i) => {
             const flip = i % 2 === 1;
